@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "amongusbot"
 version = "0.1.0"
-description = ""
+readme = "README.md"
+description = "Bot for mass-muting users in a Discord channel whenever a hotkey is pressed."
 authors = ["PederHA <peder.andresen@gmail.com>"]
+homepage = "https://github.com/PederHA/amongusbot"
 
 [tool.poetry.dependencies]
 python = "^3.8"
