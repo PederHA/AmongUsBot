@@ -1,51 +1,45 @@
-# Fuck RegEx, fuck TOML parsing, fuck DRY principles. Let's brute force.
+# Fuck RegEx, fuck TOML parsing, fuck good build scripts. 
+# Let's bump version numbers on the relevant files the easy and flimsy way.
 import sys
 
 ENCODING = "utf-8"
 
+
 def bump_pyproject(major: int, minor: int, patch: int) -> None:
-    fname = "pyproject.toml"
-    
-    with open(fname, "r", encoding=ENCODING) as f:
-        lines = f.read().splitlines()
-        for idx, line in enumerate(lines):
-            if line.startswith("version"):
-                lines[idx] = f'version = "{major}.{minor}.{patch}"'
-                break
-    
-    with open(fname, "w", encoding=ENCODING) as f:
-        f.write("\n".join(lines))
+    replace(
+        "pyproject.toml",
+        "version",
+        f'version = "{major}.{minor}.{patch}"'
+    )
 
 
 def bump_init(major: int, minor: int, patch: int) -> None:
-    fname = "amongusbot/__init__.py"
-    
-    with open(fname, "r", encoding=ENCODING) as f:
-        lines = f.read().splitlines()
-        # __version__ should be on the first line, but let's make sure we get it right
-        for idx, line in enumerate(lines): 
-            if line.startswith("__version__"):
-                lines[idx] = f"__version__ = '{major}.{minor}.{patch}'"
-                break
-    
-    with open(fname, "w", encoding=ENCODING) as f:
-        f.write("\n".join(lines))
+    replace(
+        "amongusbot/__init__.py",
+        "__version__",
+        f"__version__ = '{major}.{minor}.{patch}'"
+    )
 
 
 def bump_readme(major: int, minor: int, patch: int) -> None:
-    fname = "README.md"
-    
-    with open(fname, "r", encoding=ENCODING) as f:
+    replace(
+        "README.md", 
+        "pip install", 
+        f"pip install https://github.com/PederHA/AmongUsBot/releases/download/{major}.{minor}.{patch}/amongusbot-{major}.{minor}.{patch}.tar.gz"
+    )
+
+
+def replace(filename: str, startswith: str, replacement: str) -> None:
+    with open(filename, "r", encoding=ENCODING) as f:
         lines = f.read().splitlines()
-        # __version__ should be on the first line, but let's make sure we get it right
         for idx, line in enumerate(lines): 
-            if line.startswith("pip install"):
-                lines[idx] = f"pip install https://github.com/PederHA/AmongUsBot/releases/download/{major}.{minor}.{patch}/amongusbot-{major}.{minor}.{patch}.tar.gz"
+            if line.startswith(startswith):
+                lines[idx] = replacement
                 break
     
-    with open(fname, "w", encoding=ENCODING) as f:
+    with open(filename, "w", encoding=ENCODING) as f:
         f.write("\n".join(lines))
-    
+
 
 def main() -> None:
     if not len(sys.argv) > 1:
