@@ -1,12 +1,21 @@
 # AmongUsBot
 
-Shitty bot that toggles server muting of all members in a specific user's voice channel when a hotkey is pressed. Uses the [`keyboard`](https://pypi.org/project/keyboard/) module to listen for keypresses. 
+Shitty bot that toggles server muting of all members in a specific user's voice channel when a hotkey is pressed. Uses the [`keyboard`](https://pypi.org/project/keyboard/) module to listen for keypresses.
 
 ## Installation
 
-Clone the repository and run:
-```
+Clone the repository and install with [Poetry](https://python-poetry.org/):
+
+```bash
+git clone https://github.com/PederHA/AmongUsBot.git
+cd amongusbot
 poetry install
+```
+
+Alternatively:
+
+```bash
+pip install https://github.com/PederHA/AmongUsBot/releases/download/0.1.0/amongusbot-0.1.0.tar.gz
 ```
 
 ## Usage
@@ -16,6 +25,7 @@ Press the hotkey whenever a round starts to mute everyone in your channel, and p
 ### Configuration
 
 `amongusbot/config.py` defines the following datastructure:
+
 ```python
 @dataclass
 class Config:
