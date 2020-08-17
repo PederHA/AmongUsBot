@@ -9,5 +9,4 @@ class Config:
     log_channel_id: Optional[int] = None # Log channel ID
     polling_sec: float = 0.05            # Keyboard polling interval
     command_prefix: str = "-"            # Command prefix
-    role_name: str = "Among Us"          # Role-based muting (NYI)
     

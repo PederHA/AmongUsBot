@@ -21,7 +21,6 @@ class AmongUsCog(commands.Cog):
         self.user_id = config.user_id
         self.log_channel_id = config.log_channel_id
         self.hotkey = config.hotkey
-        self.role_name = config.role_name
         self.keyboard_loop._sleep = config.polling_sec
 
         # State of voice channels the bot has modified. 
@@ -71,28 +70,6 @@ class AmongUsCog(commands.Cog):
         state = not self.voice_channels[channel.id] # Inverse of current state
         for m in channel.members: # type: discord.Member
             await m.edit(mute=state)
-        self.voice_channels[channel.id] = state
-
-    async def toggle_mute_role(self, user: discord.User) -> None:
-        """NOTE: UNUSED! 
-        Toggles the speaking privileges of the Among Us role in a user's
-        voice channel.
-
-        Not sure if this one works as it should.
-        """
-        if not user:
-            raise TypeError("A user whose channel is to be (un)muted is required")
-
-        channel = await self.get_user_voice_channel(user)
-        if channel.id not in self.voice_channels: # Clearer than dict.setdefault, let's be real
-            self.voice_channels[channel.id] = True # Speak = True
-        
-        role = get(channel.guild.roles, name=self.role_name)
-        if not role:
-            raise AttributeError(f'Unable to find the "{self.role_name}" role. Create this role and apply it to players.')
-
-        state = not self.voice_channels[channel.id]
-        await channel.set_permissions(role, speak=state)
         self.voice_channels[channel.id] = state
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:
