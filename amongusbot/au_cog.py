@@ -1,7 +1,10 @@
 import asyncio
+import sys
 import time
 import traceback
-from typing import Dict, Optional
+from functools import partial
+from pathlib import Path
+from typing import Dict
 
 import discord
 import keyboard
@@ -9,6 +12,11 @@ from discord.ext import commands, tasks
 from discord.utils import get
 
 from .config import Config
+
+# Platform-specific sound-playing module
+# Only Windows is supported at the moment
+if sys.platform == "win32":
+    import winsound
 
 
 class AmongUsCog(commands.Cog):
@@ -27,6 +35,8 @@ class AmongUsCog(commands.Cog):
         self.doubleclick = config.doubleclick
         self.doubleclick_window = config.doubleclick_window
         self.cooldown = config.cooldown
+        self.mute_sound = str(Path(config.mute_sound).absolute())
+        self.unmute_sound = str(Path(config.unmute_sound).absolute())
 
         # State of voice channels the bot has modified. 
         self.voice_channels: Dict[int, bool] = {} # Key = Channel ID, Value: Is muted
@@ -86,10 +96,11 @@ class AmongUsCog(commands.Cog):
         if channel.id not in self.voice_channels:
             self.voice_channels[channel.id] = False # Mute = False
 
-        state = not self.voice_channels[channel.id] # Inverse of current state
+        mute = not self.voice_channels[channel.id] # Inverse of current state
         for m in channel.members: # type: discord.Member
-            await m.edit(mute=state)
-        self.voice_channels[channel.id] = state
+            await m.edit(mute=mute)
+        await self.play_sound(mute)
+        self.voice_channels[channel.id] = mute
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:
         for ch in self.bot.get_all_channels(): # type: discord.VoiceChannel
@@ -100,3 +111,11 @@ class AmongUsCog(commands.Cog):
                     return ch
         else:
             raise ValueError(f"Unable to find voice channel of {user.name}")
+
+    async def play_sound(self, mute: bool) -> None:
+        if sys.platform == "win32":
+            await self._play_sound_windows(mute)
+        
+    async def _play_sound_windows(self, mute: bool) -> None:
+        sound = self.mute_sound if mute else self.unmute_sound
+        winsound.PlaySound(sound, winsound.SND_ASYNC)
