@@ -1,4 +1,5 @@
 import asyncio
+import time
 import traceback
 from typing import Dict, Optional
 
@@ -6,6 +7,7 @@ import discord
 import keyboard
 from discord.ext import commands, tasks
 from discord.utils import get
+
 from .config import Config
 
 
@@ -21,7 +23,10 @@ class AmongUsCog(commands.Cog):
         self.user_id = config.user_id
         self.log_channel_id = config.log_channel_id
         self.hotkey = config.hotkey
-        self.keyboard_loop._sleep = config.polling_sec
+        self.keyboard_loop._sleep = config.poll_rate
+        self.doubleclick = config.doubleclick
+        self.doubleclick_window = config.doubleclick_window
+        self.cooldown = config.cooldown
 
         # State of voice channels the bot has modified. 
         self.voice_channels: Dict[int, bool] = {} # Key = Channel ID, Value: Is muted
@@ -31,11 +36,25 @@ class AmongUsCog(commands.Cog):
     @tasks.loop(seconds=0.05)
     async def keyboard_loop(self) -> None:
         if keyboard.is_pressed(self.hotkey):
+            # Double-click logic
+            if self.doubleclick:
+                start = time.time()
+                # Wait until hotkey has been released
+                while keyboard.is_pressed(self.hotkey):
+                    await asyncio.sleep(0.01)
+                # Poll keyboard for second keypress for a certain amount of time
+                while (time.time() - start) < self.doubleclick_window:
+                    if keyboard.is_pressed(self.hotkey):
+                        break # Got second click
+                    await asyncio.sleep(0.01)
+                else:
+                    return # Second click was not registered in time
+            
             try:
                 await self.toggle_mute(self.bot.get_user(self.user_id))
-            except (TypeError, ValueError) as e:
-                print(e.args[0] if e.args else "") # bad
-            await asyncio.sleep(0.2) # Avoid double-click
+            except (TypeError, ValueError, discord.errors.Forbidden) as e:
+                print("ERROR: ", e.args[0] if e.args else "") # TODO: Improve error reporting + logging
+            await asyncio.sleep(self.cooldown) # Avoid accidentally triggering twice if hotkey is held down
 
     async def cog_command_error(self, ctx: commands.Context, exc: Exception) -> None:
         """This hardly qualifies as exception handling."""
@@ -81,4 +100,3 @@ class AmongUsCog(commands.Cog):
                     return ch
         else:
             raise ValueError(f"Unable to find voice channel of {user.name}")
-        

@@ -24,16 +24,19 @@ Press the hotkey whenever a round starts to mute everyone in your channel, and p
 
 ### Configuration
 
-`amongusbot/config.py` defines the following datastructure:
+`amongusbot/config.py` defines the following configuration options:
 
 ```python
 @dataclass
 class Config:
-    user_id: int                         # Discord User ID of muter
+    user_id: int                         # Discord ID of user's channel to mute
     hotkey: str = "|"                    # Trigger hotkey
     log_channel_id: Optional[int] = None # Log channel ID
-    polling_sec: float = 0.05            # Keyboard polling interval
+    poll_rate: float = 0.05              # Keyboard polling rate (seconds)
     command_prefix: str = "-"            # Command prefix
+    doubleclick: bool = False            # Require double-click of hotkey to trigger
+    doubleclick_window: float = 0.5      # Double-click activation window (seconds)
+    cooldown: float = 1.0                # (Un)mute cooldown
 ```
 
 Defaults can be overriden when running the bot:
