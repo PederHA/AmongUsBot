@@ -103,12 +103,11 @@ class AmongUsCog(commands.Cog):
         self.voice_channels[channel.id] = mute
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:
-        for ch in self.bot.get_all_channels(): # type: discord.VoiceChannel
-            if not isinstance(ch, discord.VoiceChannel):
-                continue
-            for member in ch.members: # type: discord.Member
-                if user.id == member.id:
-                    return ch
+        for guild in self.bot.guilds: # type: discord.Guild
+            for ch in guild.voice_channels: # type: discord.VoiceChannel
+                for member in ch.members: # type: discord.Member
+                    if user.id == member.id:
+                        return ch
         else:
             raise ValueError(f"Unable to find voice channel of {user.name}")
 
