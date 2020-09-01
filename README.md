@@ -36,8 +36,8 @@ class Config:
     command_prefix: str = "-"               # Command prefix
     doubleclick: bool = False               # Require double-click of hotkey to trigger
     doubleclick_window: float = 0.5         # Double-click activation window (seconds)
-    cooldown: float = 1.0                   # (Un)mute cooldown
-    sound: bool = True                      # Play sound when (un)muting
+    cooldown: float = 2.0                   # Trigger cooldown
+    sound: bool = True                      # Play sound when triggered
     mute_sound: str = "audio/muted.wav"     # Mute sound
     unmute_sound: str = "audio/unmuted.wav" # Unmute sound
 ```

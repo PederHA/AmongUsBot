@@ -19,6 +19,13 @@ if sys.platform == "win32":
     import winsound
 
 
+def parse_sound_path(path: str) -> str:
+    p = Path(path)
+    if not p.exists():
+        raise FileNotFoundError(f"{p} does not exist!")
+    return str(p.absolute())
+
+
 class AmongUsCog(commands.Cog):
     def __init__(
             self, 
@@ -27,44 +34,56 @@ class AmongUsCog(commands.Cog):
     ) -> None:
         self.bot = bot
 
-        # Init config values
+        # IDs
         self.user_id = config.user_id
         self.log_channel_id = config.log_channel_id
-        self.hotkey = config.hotkey
-        self.keyboard_loop._sleep = config.poll_rate
+        
+        # Trigger
+        self.hotkey = config.hotkey  
         self.doubleclick = config.doubleclick
         self.doubleclick_window = config.doubleclick_window
         self.cooldown = config.cooldown
-        self.mute_sound = str(Path(config.mute_sound).absolute())
-        self.unmute_sound = str(Path(config.unmute_sound).absolute())
+
+        # Sound alert
+        self.sound = config.sound
+        self.mute_sound = parse_sound_path(config.mute_sound)
+        self.unmute_sound = parse_sound_path(config.unmute_sound)
+
+        # Polling rate
+        self.poll_rate = config.poll_rate
+        self.keyboard_loop._sleep = config.poll_rate
 
         # State of voice channels the bot has modified. 
         self.voice_channels: Dict[int, bool] = {} # Key = Channel ID, Value: Is muted
-        
+
         self.keyboard_loop.start()
         
     @tasks.loop(seconds=0.05)
     async def keyboard_loop(self) -> None:
-        if keyboard.is_pressed(self.hotkey):
-            # Double-click logic
-            if self.doubleclick:
-                start = time.time()
-                # Wait until hotkey has been released
-                while keyboard.is_pressed(self.hotkey):
-                    await asyncio.sleep(0.01)
-                # Poll keyboard for second keypress for a certain amount of time
-                while (time.time() - start) < self.doubleclick_window:
-                    if keyboard.is_pressed(self.hotkey):
-                        break # Got second click
-                    await asyncio.sleep(0.01)
-                else:
-                    return # Second click was not registered in time
-            
-            try:
-                await self.toggle_mute(self.bot.get_user(self.user_id))
-            except (TypeError, ValueError, discord.errors.Forbidden) as e:
-                print("ERROR: ", e.args[0] if e.args else "") # TODO: Improve error reporting + logging
-            await asyncio.sleep(self.cooldown) # Avoid accidentally triggering twice if hotkey is held down
+        # Check if hotkey is pressed
+        if not keyboard.is_pressed(self.hotkey):
+            return
+        
+        # Double-click logic
+        if self.doubleclick:
+            # Wait until hotkey has been released
+            while keyboard.is_pressed(self.hotkey):
+                await asyncio.sleep(self.poll_rate)
+            start = time.time()
+            # Poll keyboard for second keypress for a certain amount of time
+            while (time.time() - start) < self.doubleclick_window:
+                if keyboard.is_pressed(self.hotkey):
+                    break # Got second click
+                await asyncio.sleep(self.poll_rate)
+            else:
+                return # Second click was not registered in time
+
+        try:
+            await self.toggle_mute(self.bot.get_user(self.user_id))
+        except (TypeError, ValueError, discord.errors.Forbidden) as e:
+            print("ERROR: ", e.args[0] if e.args else e) # TODO: Improve error reporting + logging
+
+        await asyncio.sleep(self.cooldown) # Avoid accidentally triggering twice if hotkey is held down
 
     async def cog_command_error(self, ctx: commands.Context, exc: Exception) -> None:
         """This hardly qualifies as exception handling."""
@@ -99,7 +118,8 @@ class AmongUsCog(commands.Cog):
         mute = not self.voice_channels[channel.id] # Inverse of current state
         for m in channel.members: # type: discord.Member
             await m.edit(mute=mute)
-        await self.play_sound(mute)
+        if self.sound:
+            await self.play_sound(mute)
         self.voice_channels[channel.id] = mute
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:

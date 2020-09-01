@@ -14,8 +14,7 @@ def main() -> None:
     config = Config(
         user_id=123456,
         hotkey="f1", 
-        log_channel_id=234567, 
-        poll_rate=0.5
+        log_channel_id=234567,
     )
     run(token, config)
 
