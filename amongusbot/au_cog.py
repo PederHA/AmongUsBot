@@ -51,7 +51,7 @@ class AmongUsCog(commands.Cog):
 
         # Polling rate
         self.poll_rate = config.poll_rate
-        self.keyboard_loop._sleep = config.poll_rate
+        self.keyboard_loop.change_interval(seconds=config.poll_rate)
 
         # State of voice channels the bot has modified. 
         self.voice_channels: Dict[int, bool] = {} # Key = Channel ID, Value: Is muted
