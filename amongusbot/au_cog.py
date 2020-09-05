@@ -113,7 +113,6 @@ class AmongUsCog(commands.Cog):
             print("Muting" if mute else "Unmuting", end="")
             for m in channel.members: # type: discord.Member
                 await m.edit(mute=mute)
-            await asyncio.sleep(2)
             if self.sound:
                 await self.play_sound(mute)
 
