@@ -109,7 +109,7 @@ class AmongUsCog(commands.Cog):
 
         mute = not self.voice_channels[channel.id] # Inverse of current state
         
-        async with progress(loop=self.bot.loop):
+        async with progress(self.bot.loop):
             print("Muting" if mute else "Unmuting", end="")
             for m in channel.members: # type: discord.Member
                 await m.edit(mute=mute)

@@ -10,9 +10,7 @@ async def _progress(char: str=".", interval: float=0.5) -> None:
 
 
 @asynccontextmanager
-async def progress(char: str=".", interval: float=0.5, *, loop=None) -> AsyncGenerator:
-    if not loop:
-        raise ValueError("An event loop is required!")
+async def progress(loop, char: str=".", interval: float=0.5) -> AsyncGenerator:
     t = loop.create_task(_progress(char, interval))
     try:
         yield
