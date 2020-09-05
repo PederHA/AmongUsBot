@@ -3,7 +3,6 @@ import sys
 import time
 import traceback
 from functools import partial
-from pathlib import Path
 from typing import Dict
 
 import discord
@@ -18,13 +17,6 @@ from .utils import progress
 # Only Windows is supported at the moment
 if sys.platform == "win32":
     import winsound
-
-
-def parse_sound_path(path: str) -> str:
-    p = Path(path)
-    if not p.exists():
-        raise FileNotFoundError(f"{p} does not exist!")
-    return str(p.absolute())
 
 
 class AmongUsCog(commands.Cog):
@@ -47,8 +39,8 @@ class AmongUsCog(commands.Cog):
 
         # Sound alert
         self.sound = config.sound
-        self.mute_sound = parse_sound_path(config.mute_sound)
-        self.unmute_sound = parse_sound_path(config.unmute_sound)
+        self.mute_sound = config.mute_sound
+        self.unmute_sound = config.unmute_sound
 
         # Polling rate
         self.poll_rate = config.poll_rate
@@ -83,7 +75,6 @@ class AmongUsCog(commands.Cog):
             await self.toggle_mute(self.bot.get_user(self.user_id))
         except (TypeError, ValueError, discord.errors.Forbidden) as e:
             print("ERROR: ", e.args[0] if e.args else e) # TODO: Improve error reporting + logging
-
         await asyncio.sleep(self.cooldown) # Avoid accidentally triggering twice if hotkey is held down
 
     async def cog_command_error(self, ctx: commands.Context, exc: Exception) -> None:
