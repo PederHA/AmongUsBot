@@ -12,6 +12,7 @@ from discord.ext import commands, tasks
 from discord.utils import get
 
 from .config import Config
+from .utils import progress
 
 # Platform-specific sound-playing module
 # Only Windows is supported at the moment
@@ -116,11 +117,17 @@ class AmongUsCog(commands.Cog):
             self.voice_channels[channel.id] = False # Mute = False
 
         mute = not self.voice_channels[channel.id] # Inverse of current state
-        for m in channel.members: # type: discord.Member
-            await m.edit(mute=mute)
-        if self.sound:
-            await self.play_sound(mute)
+        
+        async with progress(loop=self.bot.loop):
+            print("Muting" if mute else "Unmuting", end="")
+            for m in channel.members: # type: discord.Member
+                await m.edit(mute=mute)
+            await asyncio.sleep(2)
+            if self.sound:
+                await self.play_sound(mute)
+
         self.voice_channels[channel.id] = mute
+
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:
         for guild in self.bot.guilds: # type: discord.Guild
@@ -134,6 +141,9 @@ class AmongUsCog(commands.Cog):
     async def play_sound(self, mute: bool) -> None:
         if sys.platform == "win32":
             await self._play_sound_windows(mute)
+        # elif
+        # elif
+        # else
         
     async def _play_sound_windows(self, mute: bool) -> None:
         sound = self.mute_sound if mute else self.unmute_sound
