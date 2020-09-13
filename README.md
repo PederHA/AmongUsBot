@@ -17,7 +17,7 @@ poetry install
 ### Install with pip (alternative)
 
 ```bash
-pip install amongusbot
+pip install https://github.com/PederHA/AmongUsBot/releases/download/0.2.1/amongusbot-0.2.1.tar.gz
 ```
 
 NOTE: The version on PyPi does not include sound alerts and example run file! Download those files manually and place them in your project root if you choose to use pip.

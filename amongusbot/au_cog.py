@@ -46,7 +46,7 @@ class AmongUsCog(commands.Cog):
         self.poll_rate = config.poll_rate
         self.keyboard_loop.change_interval(seconds=config.poll_rate)
 
-        # State of voice channels the bot has modified. 
+        # State of voice channels the bot has modified.
         self.voice_channels: Dict[int, bool] = {} # Key = Channel ID, Value: Is muted
 
         self.keyboard_loop.start()
@@ -117,7 +117,6 @@ class AmongUsCog(commands.Cog):
                 await self.play_sound(mute)
 
         self.voice_channels[channel.id] = mute
-
 
     async def get_user_voice_channel(self, user: discord.User) -> discord.VoiceChannel:
         for guild in self.bot.guilds: # type: discord.Guild
