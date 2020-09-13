@@ -18,8 +18,9 @@ class Config:
     unmute_sound: str = "audio/unmuted.wav" # Unmute sound
 
     def __post_init__(self) -> None:
-        self.mute_sound = parse_sound_path(self.mute_sound)
-        self.unmute_sound = parse_sound_path(self.unmute_sound)
+        if self.sound:
+            self.mute_sound = parse_sound_path(self.mute_sound)
+            self.unmute_sound = parse_sound_path(self.unmute_sound)
 
 
 def parse_sound_path(path: str) -> str:
