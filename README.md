@@ -4,19 +4,18 @@ Shitty bot that toggles server muting of all members in a specific user's voice 
 
 ## Installation
 
-Clone the repository and install with [Poetry](https://python-poetry.org/):
+Install with pip:
+```bash
+pip install amongusbot
+```
 
+Alternatively clone the repository and install with [Poetry](https://python-poetry.org/):
 ```bash
 git clone https://github.com/PederHA/AmongUsBot.git
 cd amongusbot
 poetry install
 ```
 
-Alternatively:
-
-```bash
-pip install https://github.com/PederHA/AmongUsBot/releases/download/0.2.0/amongusbot-0.2.0.tar.gz
-```
 
 ## Usage
 
