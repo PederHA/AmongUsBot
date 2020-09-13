@@ -42,7 +42,7 @@ class Config:
     unmute_sound: str = "audio/unmuted.wav" # Unmute sound
 ```
 
-Defaults can be overriden when running the bot:
+Defaults can be overridden when running the bot:
 
 ```python
 from amongusbot import run, Config
