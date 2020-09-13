@@ -15,7 +15,7 @@ poetry install
 Alternatively:
 
 ```bash
-pip install https://github.com/PederHA/AmongUsBot/releases/download/0.1.0/amongusbot-0.1.0.tar.gz
+pip install https://github.com/PederHA/AmongUsBot/releases/download/0.2.0/amongusbot-0.2.0.tar.gz
 ```
 
 ## Usage
