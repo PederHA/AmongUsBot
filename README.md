@@ -17,7 +17,7 @@ poetry install
 ### Install with pip (alternative)
 
 ```bash
-pip install https://github.com/PederHA/AmongUsBot/releases/download/0.2.1/amongusbot-0.2.1.tar.gz
+pip install amongusbot
 ```
 
 NOTE: The version on PyPi does not include sound alerts and example run file! Download those files manually and place them in your project root if you choose to use pip.
@@ -39,7 +39,7 @@ See `run_example.py`.
 
 Add the bot's secret token as an environment variable named `AUBOT_TOKEN` or pass it in as the first argument to the application when running it.
 
-### Configuration
+#### Configuration
 
 `amongusbot/config.py` defines the following configuration options:
 

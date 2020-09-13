@@ -58,7 +58,7 @@ def main() -> None:
 
     bump_pyproject(major, minor, patch)
     bump_init(major, minor, patch)
-    bump_readme(major, minor, patch)
+    #bump_readme(major, minor, patch)
 
 
 if __name__ == "__main__":
